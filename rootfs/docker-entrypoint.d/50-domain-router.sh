@@ -11,13 +11,11 @@ function createRoute {
 
     export SOURCE_NAME=$2
     export TARGET_NAME=$3
-
     MYVARS='$SOURCE_NAME:$TARGET_NAME'
-
     envsubst "$MYVARS" <$TMPL_FILE > $NGINX_CONF/${1}.conf
 
     # Collecting domains that we need to listen to/get certs for
-    if [ ! -z "$(cat $DOMAINS_FILE)" ]; then
+    if [ -s $DOMAINS_FILE ]; then
         echo -n "," >> $DOMAINS_FILE
     fi
     echo -n $SOURCE_NAME >> $DOMAINS_FILE
