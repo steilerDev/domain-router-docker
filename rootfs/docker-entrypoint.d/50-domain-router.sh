@@ -3,6 +3,8 @@
 TMPL_FILE="/opt/domain-router/domain.conf.tmpl"
 NGINX_CONF="/etc/nginx/conf.d"
 DOMAINS_FILE="$(mktemp)"
+ENV_TMPL_FILE="/opt/domain-router/domains.env.tmpl"
+ENV_FILE="/opt/domain-router/domains.env"
 
 function createRoute {
     echo "  - Creating route $1 from $2 to $3"
@@ -39,16 +41,22 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     done
 done
 
-export VIRTUAL_HOST=$(cat $DOMAINS_FILE)
-export LETSENCRYPT_HOST=$(cat $DOMAINS_FILE)
-export VIRTUAL_PORT=80
+DOMAINS=$(cat $DOMAINS_FILE)
 
-rm $DOMAINS_FILE
+if [ -z $VIRTUAL_HOST ] || \
+    [ -z $LETSENCRYPT_HOST ] || \
+    [[ "$VIRTUAL_HOST" != "$DOMAINS" ]] || \
+    [[ "$LETSENCRYPT_HOST" != "$DOMAINS" ]]; then
+        echo "Domain definitions for nginx-proxy and acme-companion were not loaded at startup. Persisting and restarting..."
 
-echo "Routes configured!"
-echo 
-
-echo "Listening for the following hosts:"
-echo "  VIRTUAL_HOST: $VIRTUAL_HOST"
-echo "  LETSENCRYPT_HOST: $LETSENCRYPT_HOST"
-echo "  VIRTUAL_PORT: $VIRTUAL_PORT"
+        export DOMAINS
+        MYVARS='$DOMAINS'
+        envsubst "$MYVARS" <$ENV_TMPL_FILE > $ENV_FILE
+        exit 1
+else
+    echo "Domains were loaded at startup: "
+    echo "  VIRTUAL_HOST: $VIRTUAL_HOST"
+    echo "  LETSENCRYPT_HOST: $LETSENCRYPT_HOST"
+    echo
+    echo "Routes succesfully configured!"
+fi
