@@ -32,20 +32,20 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     IFS=';' read -ra SOURCES <<< ${RULE[0]}
     for source in "${SOURCES[@]}"; do
         createRoute "${NAME}-${index}" $source $DEST
-        if [ -z "$(cat $DOMAINS_FILE)" ]; then
-            echo -n "$source" > $DOMAINS_FILE
-        else
-            out="$(cat $DOMAINS_FILE),$source"
-            echo -n "$out" > $DOMAINS_FILE
+
+        if [ ! -z "$(cat $DOMAINS_FILE)" ]; then
+            echo -n "," >> $DOMAINS_FILE
         fi
+        echo -n ${var%"${var##*[![:space:]]}"} >> $DOMAINS_FILE
+
         index=$((index + 1))
     done
 done
 
 DOMAINS=$(cat $DOMAINS_FILE)
 
-if [ -z $VIRTUAL_HOST ] || \
-    [ -z $LETSENCRYPT_HOST ] || \
+if [ -z "$VIRTUAL_HOST" ] || \
+    [ -z "$LETSENCRYPT_HOST" ] || \
     [[ "$VIRTUAL_HOST" != "$DOMAINS" ]] || \
     [[ "$LETSENCRYPT_HOST" != "$DOMAINS" ]]; then
         echo "Domain definitions for nginx-proxy and acme-companion were not loaded at startup. Persisting and restarting..."
