@@ -16,4 +16,4 @@ RUN apt-get update && \
     apt-get autoremove && \
     rm -rf /var/lib/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 
-RUN chmod +x /docker-entrypoint.d/entry.sh
+RUN chmod +x /docker-entrypoint.d/50-domain-router.sh
