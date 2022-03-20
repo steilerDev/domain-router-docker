@@ -13,24 +13,33 @@ The following environmental variables can be used for configuration:
 The following mount, in combination with referencing the environmental file is essential in order to spin the container up
 The following paths are recommended for persisting state and/or accessing configurations
 
- - `/some-path/` 
-    Description on usage
+ - `/opt/domain-router/domains.env`  
+    This file will be written by the container, in order to provide the correct `nginx-proxy` and `acme-companion` environmental variables, in order to respond to the defined domains. This file needs to be created before starting the server (otherwise a folder is created).  
+    This file needs to be included in the `docker run --env-file` command, or `docker-compose.yml` (see below).
 
 # docker-compose example
-Usage with `nginx-proxy` inside of predefined `steilerGroup` network.
+Usage with `nginx-proxy` & `acme-companion` inside of predefined `steilerGroup` network.
+
+After altering the router definitions, two `up` commands are required, because the environment variables are updated and only reloaded if docker-compose updates the container. Therefore using the following should work well:
+```
+docker-compose up && docker-compose up -d
+```
+
 
 ```
 version: '2'
 services:
-  <service-name>:
-    image: steilerdev/<pkg-name>:latest
-    container_name: <docker-name>
-    restart: unless-stopped
-    hostname: "<hostname>"
+  router:
+    image: steilerdev/domain-router:latest
+    container_name: domain-router
+    restart: no
+    env_file:
+      - ./volumes/domains.env
     environment:
-      VAR: "value"
+      ROUTER_johndoe: "johndoe.net;www.johndoe.net => https://github.com/johndoe"
+      ROUTER_janedoe: "janedoe.net => https://github.com/janedoe"
     volumes:
-      - /<some-host-path>:/<some-docker-path>
+      - /opt/docker/domain-router/volumes/domains.env:/opt/domain-router/domains.env
 networks:
   default:
     external:

@@ -46,10 +46,12 @@ if [ -z "$VIRTUAL_HOST" ] || \
     [ -z "$LETSENCRYPT_HOST" ] || \
     [[ "$VIRTUAL_HOST" != "$DOMAINS" ]] || \
     [[ "$LETSENCRYPT_HOST" != "$DOMAINS" ]]; then
-        echo "Domain definitions for nginx-proxy and acme-companion were not loaded at startup. Persisting and restarting..."
+        echo "Domain definitions for nginx-proxy and acme-companion were not loaded at startup. Persisting and killing container."
         export DOMAINS
         MYVARS='$DOMAINS'
         envsubst "$MYVARS" <$ENV_TMPL_FILE > $ENV_FILE
+
+        echo "Please manually restart container, in order to re-load environmental file!"
         exit 1
 else
     echo "Domains were loaded at startup: "
