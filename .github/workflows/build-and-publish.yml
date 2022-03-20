@@ -4,8 +4,7 @@ on: [push, pull_request]
 
 env:
   # This will pull the github repo name
-  PKG_NAME: ${{ github.event.repository.name }}
-#  NODE_VERSION: 17
+  PKG_NAME: domain-router
 
 # Required secrets:
 # DOCKER_DEV_HOST       Self-hosted docker registry
@@ -24,16 +23,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-#    - name: Setup node
-#      uses: actions/setup-node@v2
-#      with:
-#        node-version: ${{ env.NODE_VERSION }}
-#    - name: Install dependencies & build app
-#      run: |
-#        npm install && \
-#        npm run test && \
-#        npm run build && \
-#        npm run docs
     - name: Package docker artifacts
       run: |
         if [ -d ./rootfs ]; then
