@@ -8,8 +8,6 @@ HOSTS=""
 function createRoute {
     echo "  - Creating route $1 from $2 to $3"
 
-    HOSTS+=",$2"
-
     export SOURCE_NAME=$2
     export TARGET_NAME=$3
 
@@ -33,6 +31,8 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     IFS=';' read -ra SOURCES <<< ${RULE[0]}
     for source in "${SOURCES[@]}"; do
         createRoute "${NAME}-${index}" $source $DEST
+        HOSTS+=",$source"
+        echo $HOSTS
         index=$((index + 1))
     done
 done
