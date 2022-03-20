@@ -3,7 +3,7 @@
 TMPL_FILE="/opt/domain-router/domain.conf.tmpl"
 NGINX_CONF="/etc/nginx/conf.d"
 
-HOSTS=""
+export HOSTS=""
 
 function createRoute {
     echo "  - Creating route $1 from $2 to $3"
