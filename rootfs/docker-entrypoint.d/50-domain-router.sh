@@ -42,17 +42,17 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
 done
 
 DOMAINS=$(cat $DOMAINS_FILE)
+DOMAINS=${DOMAINS%?}
 
 if [ -z $VIRTUAL_HOST ] || \
     [ -z $LETSENCRYPT_HOST ] || \
     [[ "$VIRTUAL_HOST" != "$DOMAINS" ]] || \
     [[ "$LETSENCRYPT_HOST" != "$DOMAINS" ]]; then
         echo "Domain definitions for nginx-proxy and acme-companion were not loaded at startup. Persisting and restarting..."
-        echo "xx${DOMAINS}xx"
         export DOMAINS
         MYVARS='$DOMAINS'
         envsubst "$MYVARS" <$ENV_TMPL_FILE > $ENV_FILE
-        exit 0
+        exit 1
 else
     echo "Domains were loaded at startup: "
     echo "  VIRTUAL_HOST: $VIRTUAL_HOST"
