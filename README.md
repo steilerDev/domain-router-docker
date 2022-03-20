@@ -1,5 +1,5 @@
-# Docker Container for XXX
-This repository is a template for custom docker files.
+# Docker Container - Domain Router
+This docker container allows specifying the forwarding of domains to other domains (e.g. to have a static route between hosts, or to easily include sub-domains).
 
 # Configuration options
 ## Environment Variables
