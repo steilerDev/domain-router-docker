@@ -15,6 +15,12 @@ function createRoute {
     MYVARS='$SOURCE_NAME:$TARGET_NAME'
 
     envsubst "$MYVARS" <$TMPL_FILE > $NGINX_CONF/${1}.conf
+
+    # Collecting domains that we need to listen to/get certs for
+    if [ ! -z "$(cat $DOMAINS_FILE)" ]; then
+        echo -n "," >> $DOMAINS_FILE
+    fi
+    echo -n $SOURCE_NAME >> $DOMAINS_FILE
 }
 
 echo 
@@ -32,12 +38,6 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     IFS=';' read -ra SOURCES <<< ${RULE[0]}
     for source in "${SOURCES[@]}"; do
         createRoute "${NAME}-${index}" $source $DEST
-
-        if [ ! -z "$(cat $DOMAINS_FILE)" ]; then
-            echo -n "," >> $DOMAINS_FILE
-        fi
-        echo -n ${var%"${var##*[![:space:]]}"} >> $DOMAINS_FILE
-
         index=$((index + 1))
     done
 done
