@@ -1,0 +1,7 @@
+server {
+    server_name $SOURCE_NAME;
+    location ~ ^/.well-known { }
+    location / {
+        return 301 $TARGET_NAME$request_uri;
+    } 
+}

@@ -1,4 +1,4 @@
-FROM node:17-bullseye
+FROM nginx:1.21
 ENV DEBIAN_FRONTEND noninteractive
 
 # Applying fs patch for assets
@@ -11,7 +11,10 @@ RUN apt-get update && \
         --no-install-recommends \
         --fix-missing \
         --assume-yes \
-            apt-utils vim curl wget && \
+            apt-utils curl gettext-base && \
     apt-get clean autoclean && \
     apt-get autoremove && \
     rm -rf /var/lib/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
+
+RUN chmod +x /opt/domain-router/entry.sh
+ENTRYPOINT ["/opt/domain-router/entry.sh"]
