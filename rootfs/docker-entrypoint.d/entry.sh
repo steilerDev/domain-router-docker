@@ -16,7 +16,7 @@ function createRoute {
 
 echo "Welcome to Domain-Router by steilerDev - https://github.com/steilerDev/domain-router-docker -"
 
-echo "Reading environment variables..."
+echo "Reading environment variables & defining routes..."
 compgen -A variable | grep -E "^ROUTER_" | while read line; do 
     NAME=$(echo $line | cut -c8- | tr '_' '.')
 
@@ -31,5 +31,3 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
         index=$((index + 1))
     done
 done
-
-exec nginx -g 'daemon off;'
