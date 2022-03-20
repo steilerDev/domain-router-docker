@@ -35,6 +35,7 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     done
 done
 echo $HOSTS
+echo $SOURCE_NAME
 export VIRTUAL_HOST=${HOSTS:1}
 export LETSENCRYPT_HOST=${HOSTS:1}
 export VIRTUAL_PORT=80

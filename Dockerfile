@@ -11,7 +11,7 @@ RUN apt-get update && \
         --no-install-recommends \
         --fix-missing \
         --assume-yes \
-            apt-utils curl gettext-base && \
+            vim apt-utils curl gettext-base && \
     apt-get clean autoclean && \
     apt-get autoremove && \
     rm -rf /var/lib/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
