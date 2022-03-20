@@ -42,7 +42,7 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
 done
 
 DOMAINS=$(cat $DOMAINS_FILE)
-
+echo "VH: $VIRTUAL_HOST"
 if [ -z $VIRTUAL_HOST ] || \
     [ -z $LETSENCRYPT_HOST ] || \
     [[ "$VIRTUAL_HOST" != "$DOMAINS" ]] || \
