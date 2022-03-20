@@ -1,5 +1,8 @@
 #!/bin/bash
 
+TMPL_FILE="/opt/domain-router/domain.conf.tmpl"
+NGINX_CONF="/etc/nginx/conf.d"
+
 function createRoute {
     echo "Creating route $1 from $2 to $3"
 
@@ -8,7 +11,7 @@ function createRoute {
 
     MYVARS='$SOURCE_NAME:$TARGET_NAME'
 
-    envsubst "$MYVARS" <domain.conf.tmpl > /etc/nginx/conf.d/${1}.conf
+    envsubst "$MYVARS" <$TMPL_FILE > $NGINX_CONF/${1}.conf
 }
 
 echo "Welcome to Domain-Router by steilerDev - https://github.com/steilerDev/domain-router-docker -"
