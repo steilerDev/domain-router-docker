@@ -32,7 +32,7 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     IFS=';' read -ra SOURCES <<< ${RULE[0]}
     for source in "${SOURCES[@]}"; do
         createRoute "${NAME}-${index}" $source $DEST
-        if [ -z $(cat $DOMAINS_FILE) ]; then
+        if [ -z "$(cat $DOMAINS_FILE)" ]; then
             echo -n $source > $DOMAINS_FILE
         else
             echo -n ",$source" >> $DOMAINS_FILE

@@ -5,11 +5,12 @@ This docker container allows specifying the forwarding of domains to other domai
 ## Environment Variables
 The following environmental variables can be used for configuration:
 
- - `VAR`  
-    Description for var  
-    Accepted options
+ - `ROUTER_<name>`  
+    The router definition needs have a unique name and its value needs to follow the following syntax:   
+    `<source-domain>(;<source-domain>...) => <URL>`, e.g.: `ROUTER_doe="doe.net;john.doe.net => https://github.com/jdoe/"`
 
 ## Volume Mounts
+The following mount, in combination with referencing the environmental file is essential in order to spin the container up
 The following paths are recommended for persisting state and/or accessing configurations
 
  - `/some-path/` 
