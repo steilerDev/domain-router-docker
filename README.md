@@ -18,13 +18,12 @@ The following paths are recommended for persisting state and/or accessing config
     This file needs to be included in the `docker run --env-file` command, or `docker-compose.yml` (see below).
 
 # docker-compose example
-Usage with `nginx-proxy` & `acme-companion` inside of predefined `steilerGroup` network.
+Usage with [`nginx-proxy`](https://github.com/nginx-proxy/nginx-proxy) and [`acme-companion`](https://github.com/nginx-proxy/acme-companion) inside of predefined `steilerGroup` network.
 
 After altering the router definitions, two `up` commands are required, because the environment variables are updated and only reloaded if docker-compose updates the container. Therefore using the following should work well:
 ```
 docker-compose up && docker-compose up -d
 ```
-
 
 ```
 version: '2'
