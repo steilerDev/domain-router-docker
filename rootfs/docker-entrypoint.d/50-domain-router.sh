@@ -33,16 +33,16 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     for source in "${SOURCES[@]}"; do
         createRoute "${NAME}-${index}" $source $DEST
         if [ -z "$(cat $DOMAINS_FILE)" ]; then
-            echo -n $source > $DOMAINS_FILE
+            echo -n "$source" > $DOMAINS_FILE
         else
-            echo -n ",$source" >> $DOMAINS_FILE
+            out="$(cat $DOMAINS_FILE),$source"
+            echo -n "$out" > $DOMAINS_FILE
         fi
         index=$((index + 1))
     done
 done
 
 DOMAINS=$(cat $DOMAINS_FILE)
-DOMAINS=${DOMAINS%?}
 
 if [ -z $VIRTUAL_HOST ] || \
     [ -z $LETSENCRYPT_HOST ] || \
