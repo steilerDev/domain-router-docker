@@ -1,28 +1,22 @@
 name: Build & Publish
 
-on: [push, pull_request]
+on: push
 
 env:
   # This will pull the github repo name
   PKG_NAME: domain-router
+  DOCKER_USERNAME: steilerdev
 
 # Required secrets:
-# DOCKER_DEV_HOST       Self-hosted docker registry
-# DOCKER_DEV_USERNAME   Username for self-hosted docker registry
-# DOCKER_DEV_PWD        Password for self-hosted docker registry
-#
-# DOCKER_USERNAME       DockerHub username
 # DOCKER_PWD            DockerHub password
-
 
 jobs:
   build:
     name: Build Project
-    if: github.repository != 'steilerDev/docker-base'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Package docker artifacts
       run: |
         if [ -d ./rootfs ]; then
@@ -35,44 +29,10 @@ jobs:
           done
         fi
     - name: Upload docker artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: rootfs
         path: ./**/rootfs.tar.gz
-
-  publish-docker-dev:
-    name: Publish Project to steilerGroup-Docker
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-    - name: Login to Docker Registry
-      run: docker login ${{secrets.DOCKER_DEV_HOST}} -u ${{secrets.DOCKER_DEV_USERNAME}} -p ${{secrets.DOCKER_DEV_PWD}}
-    - name: Build the Docker image
-      run: |
-        if [ -f ./Dockerfile ]; then
-          if [ -f rootfs/rootfs.tar.gz ]; then
-            echo "Moving rootfs.tar.gz..."
-            mv rootfs/rootfs.tar.gz ./
-          fi
-          docker build . --file Dockerfile --tag ${{secrets.DOCKER_DEV_HOST}}/$PKG_NAME:latest
-        else
-          for d in */ ; do
-            if [ -f ${d%/}/Dockerfile ]; then
-              if [ -f rootfs/${d%/}/rootfs.tar.gz ]; then
-                echo "Moving rootfs.tar.gz..."
-                mv rootfs/${d%/}/rootfs.tar.gz ${d}
-              fi
-              docker build ${d} --file ${d%/}/Dockerfile --tag ${{secrets.DOCKER_DEV_HOST}}/$PKG_NAME:${d%/}
-            fi
-          done
-        fi
-        docker image ls
-    - name: Push to Docker Registry
-      run: docker image push --all-tags ${{secrets.DOCKER_DEV_HOST}}/$PKG_NAME
 
   publish-dockerhub:
     name: Publish Project to DockerHub
@@ -81,11 +41,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
     - name: Login to DockerHub
-      run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PWD}}
+      run: docker login -u $DOCKER_USERNAME -p ${{secrets.DOCKER_PWD}}
     - name: Build the Docker image
       run: |
         if [ -f Dockerfile ]; then
@@ -93,25 +53,25 @@ jobs:
             echo "Moving rootfs.tar.gz..."
             mv rootfs/rootfs.tar.gz ./
           fi
-          docker build . --file Dockerfile --tag ${{secrets.DOCKER_USERNAME}}/$PKG_NAME:latest
+          docker build . --file Dockerfile --tag $DOCKER_USERNAME/$PKG_NAME:latest
         else
           for d in */ ; do
             if [ -f ${d%/}/Dockerfile ]; then
               if [ -f rootfs/${d%/}/rootfs.tar.gz ]; then
                 mv rootfs/${d%/}/rootfs.tar.gz ${d}
               fi
-              docker build ${d} --file ${d%/}/Dockerfile --tag ${{secrets.DOCKER_USERNAME}}/$PKG_NAME:${d%/}
+              docker build ${d} --file ${d%/}/Dockerfile --tag $DOCKER_USERNAME/$PKG_NAME:${d%/}
             fi
           done
         fi
         docker image ls
     - name: Push to DockerHub
-      run: docker image push --all-tags ${{secrets.DOCKER_USERNAME}}/$PKG_NAME
+      run: docker image push --all-tags $DOCKER_USERNAME/$PKG_NAME
     - name: Update DockerHub readme
-      uses: peter-evans/dockerhub-description@v2
+      uses: peter-evans/dockerhub-description@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
+        username: ${{ env.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PWD }}
-        repository: ${{secrets.DOCKER_USERNAME}}/${{env.PKG_NAME}}
+        repository: ${{env.DOCKER_USERNAME}}/${{env.PKG_NAME}}
         readme-filepath: ./README.md
         short-description: ${{ github.event.repository.description }}
