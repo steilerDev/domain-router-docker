@@ -33,7 +33,7 @@ compgen -A variable | grep -E "^ROUTER_" | while read line; do
     DEST=$(echo ${RULE[2]} | tr -d ' ')
 
     index=1
-    IFS=';' read -ra SOURCES <<< ${RULE[0]}
+    IFS=',' read -ra SOURCES <<< ${RULE[0]}
     for source in "${SOURCES[@]}"; do
         createRoute "${NAME}-${index}" $source $DEST
         index=$((index + 1))

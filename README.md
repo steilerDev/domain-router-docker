@@ -7,7 +7,7 @@ The following environmental variables can be used for configuration:
 
  - `ROUTER_<name>`  
     The router definition needs have a unique name and its value needs to follow the following syntax:   
-    `<source-domain>(;<source-domain>...) => <URL>`, e.g.: `ROUTER_doe="doe.net;john.doe.net => https://github.com/jdoe/"`
+    `<source-domain>(,<source-domain>...) => <URL>`, e.g.: `ROUTER_doe="doe.net,john.doe.net => https://github.com/jdoe/"`
 
 ## Volume Mounts
 The following mount, in combination with referencing the environmental file is essential in order to spin the container up
@@ -35,7 +35,7 @@ services:
     env_file:
       - ./volumes/domains.env
     environment:
-      ROUTER_johndoe: "johndoe.net;www.johndoe.net => https://github.com/johndoe"
+      ROUTER_johndoe: "johndoe.net,www.johndoe.net => https://github.com/johndoe"
       ROUTER_janedoe: "janedoe.net => https://github.com/janedoe"
     volumes:
       - /opt/docker/domain-router/volumes/domains.env:/opt/domain-router/domains.env
