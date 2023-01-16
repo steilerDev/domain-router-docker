@@ -9,6 +9,14 @@ ENV_FILE="/opt/domain-router/domains.env"
 function createRoute {
     echo "  - Creating route $1 from $2 to $3"
 
+    if [[ "$VIRTUAL_HOST" != *"$2"* ]]; then
+        echo "WARN: $2 not present in VIRTUAL_HOST definition - route might not work"
+    fi
+
+    if [[ "$LETSENCRYPT_HOST" != *"$2"* ]]; then
+        echo "WARN: $2 not present in LETSENCRYPT definition - route might not work"
+    fi
+
     export SOURCE_NAME=$2
     export TARGET_NAME=$3
     MYVARS='$SOURCE_NAME:$TARGET_NAME'
@@ -42,21 +50,8 @@ done
 
 DOMAINS=$(cat $DOMAINS_FILE)
 
-if [ -z "$VIRTUAL_HOST" ] || \
-    [ -z "$LETSENCRYPT_HOST" ] || \
-    [[ "$VIRTUAL_HOST" != "$DOMAINS" ]] || \
-    [[ "$LETSENCRYPT_HOST" != "$DOMAINS" ]]; then
-        echo "Domain definitions for nginx-proxy and acme-companion were not loaded at startup. Persisting and killing container."
-        export DOMAINS
-        MYVARS='$DOMAINS'
-        envsubst "$MYVARS" <$ENV_TMPL_FILE > $ENV_FILE
-
-        echo "Please manually restart container, in order to re-load environmental file!"
-        exit 1
-else
-    echo "Domains were loaded at startup: "
-    echo "  VIRTUAL_HOST: $VIRTUAL_HOST"
-    echo "  LETSENCRYPT_HOST: $LETSENCRYPT_HOST"
-    echo
-    echo "Routes succesfully configured!"
-fi
+echo "Routes loaded!"
+echo "In order to remove warnings, add the following env-variables to your docker compose configuration:"
+echo "  VIRTUAL_HOST: $DOMAINS"
+echo "  LETSENCRYPT_HOST: $DOMAINS"
+echo
